@@ -8,16 +8,36 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var activities = Activities()
+    @State private var showingAddActivity = false
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            List {
+                ForEach(activities.items) { item in
+                    NavigationLink(item.name) {
+                        ActivityDetails(activity: item, activities: activities)
+                    }
+                }
+                .onDelete(perform: removeActivities)
+            }
+            .navigationTitle("Habit Tracker")
+            .toolbar {
+                Button("Add activity", systemImage: "plus") {
+                    showingAddActivity = true
+                }
+            }
+            .sheet(isPresented: $showingAddActivity) {
+                AddActivity(activities: activities)
+            }
         }
-        .padding()
+    }
+    
+    func removeActivities(at offset: IndexSet) {
+        activities.items.remove(atOffsets: offset)
     }
 }
+
 
 #Preview {
     ContentView()
